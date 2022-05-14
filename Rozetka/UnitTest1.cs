@@ -26,7 +26,7 @@ namespace Rozetka
         }
 
         [Test]
-        public void Test1()
+        public void LoginTest()
         {
             var signIn = _driver.FindElement(_signInButton);
             signIn.Click();
@@ -81,9 +81,39 @@ namespace Rozetka
         }
 
         [Test]
-        public void Test2()
+        public void AddProductToBasketTest()
         {
-            _driver.Navigate().GoToUrl("");   
+            _driver.Navigate().GoToUrl("https://rozetka.com.ua/ua/spirit-52027097245/p317135137/");
+            var buyButton = _driver.FindElement(By.CssSelector(".button--medium > .buy-button__label"));
+            buyButton.Click();
+            Thread.Sleep(2000);
+            
+            IWebElement form;
+            while (true)
+            {
+                try
+                {
+                    form = _driver.FindElement(_form);
+                    break;
+                }
+                catch (Exception)
+                {
+                    var basket = _driver.FindElement(By.CssSelector(".header-actions__item--cart svg"));
+                    basket.Click();
+                }
+            }
+
+            if (!form.Text.Equals("Кошик")) Assert.Fail("Basket page wasn't opened.");
+            try
+            {
+                _driver.FindElement(
+                    By.XPath("//a[contains(text(),'Велосипед Spirit Echo 7.2 27.5\" рама M 2021 Лате (52027097245)')]"));
+                Assert.Pass();
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Product wasn't been added to a basket.");
+            }
         }
         
         [TearDown]
