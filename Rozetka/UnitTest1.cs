@@ -115,6 +115,38 @@ namespace Rozetka
                 Assert.Fail("Product wasn't been added to a basket.");
             }
         }
+
+        [Test]
+        public void SearchTest()
+        {
+            const string searchText = "Кросівки Ni";
+            var search = _driver.FindElement(By.XPath("//input[@name='search']"));
+            search.SendKeys(searchText);
+            
+            Thread.Sleep(1000);
+            var searchButton = _driver.FindElement(By.XPath("//button[contains(.,'Знайти')]"));
+            searchButton.Click();
+            
+            Thread.Sleep(4000);
+            var productCards = _driver.FindElements(By.CssSelector(".goods-tile.ng-star-inserted"));
+            if (productCards.Count==0)
+            {
+                IWebElement message = null;
+                try
+                {
+                    message = _driver
+                        .FindElement(
+                            By.ClassName("catalog-empty"));
+                }
+                catch (Exception)
+                {
+                    Assert.Fail("Products weren't found and message about it wasn't appeared.");
+                }
+                Assert.Pass($"Products by search '{searchText}' wasn't found.\n" +
+                            $"[{message.Text}]");
+            }
+            Assert.Pass("Products were found.");
+        }
         
         [TearDown]
         public void TearDown()
